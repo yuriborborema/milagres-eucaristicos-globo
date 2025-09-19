@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Globo Interativo</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #000011;
+        }
+    </style>
+</head>
+<body>
+    <div id="globeViz"></div>
+
+    <script src="//unpkg.com/three"></script>
+    <script src="//unpkg.com/three-globe"></script>
+
+    <script>
+        const myGlobe = Globe()
+            .globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg') // Imagem de textura do globo
+            .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png') // Topografia para efeito 3D
+            .polygonsData(countries.features) // Carrega os dados dos países
+            .polygonCapColor(() => 'rgba(255, 255, 255, 0.4)') // Cor padrão dos países
+            .polygonStrokeColor(() => '#111') // Cor da borda dos países
+            .onPolygonHover(({ properties: d }) => {
+                myGlobe.polygonCapColor(p => p === d ? 'rgba(255, 255, 255, 0.6)' : 'rgba(255, 255, 255, 0.4)');
+            })
+            .onPolygonClick(({ properties: d }) => {
+                alert(`Você selecionou: ${d.name}`); // Mostra um alerta ao clicar no país
+            })
+            (document.getElementById('globeViz'));
+
+        // Rotação automática do globo
+        const rotSpeed = 0.05; // Velocidade de rotação em graus por frame
+        function animate() {
+            myGlobe.rotation.y += rotSpeed;
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // Dados de exemplo, você pode carregar de um arquivo GeoJSON real
+        const countries = {
+            type: "FeatureCollection",
+            features: [
+                {
+                    type: "Feature",
+                    properties: { name: "Brazil" },
+                    geometry: { type: "Polygon", coordinates: [[[-47, -33], [-73, -33], [-73, 5], [-47, 5], [-47, -33]]] }
+                },
+                // Adicione mais países aqui
+            ]
+        };
+    </script>
+</body>
+</html>
